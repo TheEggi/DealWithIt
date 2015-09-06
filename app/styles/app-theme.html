@@ -28,8 +28,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --text-primary-color: #ffffff; /*text/icons*/
     --accent-color: #FF4081;
     --primary-background-color: #c5cae9;
-    --primary-text-color: #212121;
-    --secondary-text-color: #727272;
+    --primary-text-color: #ffffff;
+    --secondary-text-color: #ffffff;
     --disabled-text-color: #bdbdbd;
     --divider-color: #B6B6B6;
 
@@ -43,6 +43,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* paper-menu */
     --paper-menu-background-color: #fff;
     --menu-link-color: #111111;
+    /* paper-input */
+    --paper-input-container-label: #ffffff;
   }
 
   /* General styles */
@@ -52,7 +54,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     background-color: var(--drawer-menu-color);
     border-bottom: var(--drawer-toolbar-border-color);
   }
-
   paper-scroll-header-panel {
     height: 100%;
   }
@@ -121,12 +122,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     border-width: 3px;
   }
 
-  paper-input.red-label /deep/ .label-text {
-    color:red;
-  }
-  paper-input.short {
-      width: 400px;
-  }
 
   #mainToolbar:not(.tall) .middle {
     font-size: 18px;
