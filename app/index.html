@@ -39,6 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
   <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+  <link rel="import" href="bower_components/iron-icons/hardware-icons.html">
 
   <!-- Tile icon for Win8 (144x144) -->
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
@@ -65,15 +66,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-scroll-header-panel main>
         <!-- Main Toolbar -->
 
-        <paper-toolbar id="mainToolbar" class="tall">
-          <div class="top">
-          top
-          </div>
-          <div class="middle middle-container debug">
-            <paper-input label="Type a new search" char-counter></paper-input>
-          </div>
-          <div class="bottom">
-          bottom
+        <paper-toolbar id="mainToolbar">
+          <div class="middle-container">
+            <paper-input-container id="searchbox">
+              <label>Type a new search</label>
+              <input is="iron-input">
+              <paper-icon-button suffix class="big-header-icon" icon="hardware:keyboard-voice"></paper-icon-button>
+            </paper-input-container>
           </div>
         </paper-toolbar>
 
