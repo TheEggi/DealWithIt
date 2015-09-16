@@ -1,0 +1,138 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<dom-module id="work-canvas">
+  <style>
+  :host {
+    display: block;
+    width: 500px;
+    height: 500px;
+  }
+  
+  .blue {
+    background: blue;
+    width: 20px;
+    height: 20px;
+  }
+  
+  @media (max-width: 600px) {
+    h1.paper-font-display1 {
+      font-size: 24px;
+    }
+  }
+  </style>
+  <template>
+    <canvas style='border:1px solid red' id="canvas" width="500" height="500"></canvas><br /> 
+    <div id="main">
+      <div class="blue draggable"></div>
+    </div>
+  </template>
+  <script src="../../bower_components/interact/interact.js"></script>
+  <script src="../../bower_components/victor/victor.js"></script>
+  <script>
+  (function() {
+    Polymer({
+      is: 'work-canvas',
+
+      properties: {
+        greeting: {
+          type: String,
+          value: 'Welcome!',
+          notify: true
+        }
+      },
+
+      created: function() {
+        function dragMoveListener(event) {
+          var target = event.target,
+            // keep the dragged position in the data-x/data-y attributes
+            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+          // translate the element
+          target.style.webkitTransform =
+            target.style.transform =
+            'translate(' + x + 'px, ' + y + 'px)';
+
+          // update the posiion attributes
+          target.setAttribute('data-x', x);
+          target.setAttribute('data-y', y);
+        }
+        interact('.draggable')
+          .draggable({
+            // enable inertial throwing
+            inertia: true,
+            // keep the element within the area of it's parent
+            restrict: {
+              restriction: "parent",
+              endOnly: true,
+              elementRect: {
+                top: 0,
+                left: 0,
+                bottom: 1,
+                right: 1
+              }
+            },
+
+            // call this function on every dragmove event
+            onmove: dragMoveListener,
+            // call this function on every dragend event
+            onend: function(event) {
+              var textEl = event.target.querySelector('p');
+
+              textEl && (textEl.textContent =
+                'moved a distance of ' + (Math.sqrt(event.dx * event.dx +
+                  event.dy * event.dy) | 0) + 'px');
+            }
+          });
+          
+
+
+      },
+      attached : function(){
+          var canvas = this.$.canvas;
+          var ctx = canvas.getContext("2d");
+
+          
+          ctx.strokeStyle='red';
+
+
+          canvas.addEventListener('mousemove', function(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(mousePos.x, 0);
+            ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.stroke();
+            ctx.moveTo(0, mousePos.y)
+            ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.stroke();
+          }, false);
+          canvas.addEventListener('mousedown', function(evt) {
+            var canvasx = evt.pageX - canvas.offsetLeft;
+            var canvasy = evt.pageY - canvas.offsetTop;
+            
+          }, false)
+          function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+          };
+          function drawArrowHead(a, b){
+            var h = 10 * Math.sqrt()
+            var U = (a.subtract(b)).divide(b.subtract(a))
+          }
+      }
+      }
+    });
+  })();
+  </script>
+</dom-module>
