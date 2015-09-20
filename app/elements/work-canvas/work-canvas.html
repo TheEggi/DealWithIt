@@ -11,9 +11,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="work-canvas">
   <style>
   :host {
-    display: block;
-    width: 500px;
-    height: 500px;
+    display: center;
+    position: relative;
+    width: 300px;
+    height: 700px;
   }
   
   .blue {
@@ -29,13 +30,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
   </style>
   <template>
-    <canvas style="position: absolute; left: 0; top: 164; z-index: 0;" id="gridCanvas" width="500" height="500"></canvas>
-    <canvas style="position: absolute; left: 0; top: 164; z-index: 1;" id="arcCanvas" width="500" height="500"></canvas>
-    <canvas style="position: absolute; left: 0; top: 164; z-index: 2;" id="canvas" height="500" width="500">
-        <div id="main">
-          <div class="blue draggable"></div>
-        </div>
-      </canvas>
+    <paper-card>
+      <div class="card-content">
+        <canvas style="position: absolute; left: 0; top: 0; z-index: 0;" id="gridCanvas" width="500" height="500"></canvas>
+        <canvas style="position: absolute; left: 0; top: 0; z-index: 1;" id="arcCanvas" width="500" height="500"></canvas>
+        <canvas style="position: absolute; left: 0; top: 0; z-index: 2;" id="canvas" height="500" width="500">
+          <div id="main">
+            <div class="blue draggable"></div>
+          </div>
+        </canvas>
+      </div>
+    </paper-card>
   </template>
   <script>
   (function() {
@@ -99,16 +104,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       attached: function() {
+        function fitToContainer(canvas) {
+          // Make it visually fill the positioned parent
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+          // ...then set the internal size to match
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+        }
+
         function drawGrid(canvas) {
           var ctx = canvas.getContext('2d');
-          ctx.strokeStyle = 'grey';
-          for (i = 0; i < canvas.height; i += 50) {
+          ctx.strokeStyle = 'lightgrey';
+          for (i = 0; i < canvas.height; i += 20) {
             ctx.beginPath();
             ctx.moveTo(0, i);
             ctx.lineTo(canvas.width, i);
             ctx.stroke();
           }
-          for (i = 0; i < canvas.width; i += 50) {
+          for (i = 0; i < canvas.width; i += 20) {
             ctx.beginPath();
             ctx.moveTo(i, 0);
             ctx.lineTo(i, canvas.width);
@@ -116,9 +130,84 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
         }
+
+        function convertToCanvasCoordinates(vec) {
+          if (vec.x < 0) {
+            vec.x = Math.abs(vec.x);
+          }
+          if (vec.y < 0) {
+            vec.y = Math.abs(vec.y);
+          }
+        }
+
+        function clearCanvas() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawArrowHead(startVector, endVector) {
+          var originalStart = startVector.clone();
+          var originalEnd = endVector.clone();
+          var h = 10 * Math.sqrt(3);
+          var w = 10;
+          var U = endVector.subtract(startVector);
+          U = U.norm();
+
+
+          ctx.beginPath();
+          var umulti = U.clone().multiply(Victor(h, h));
+          ctx.moveTo(originalEnd.x, originalEnd.y);
+
+          var dest = originalEnd.clone().add(umulti); // 20 down
+          convertToCanvasCoordinates(dest);
+
+          var V1 = new Victor(-(U.y), U.x);
+          var v1Dist = dest.clone().add(V1.multiply(Victor(w, w)));
+          var V2 = new Victor(U.y, -(U.x));
+          var v2Dist = dest.clone().add(V2.multiply(Victor(w, w)));
+          //convertToCanvasCoordinates(v2Dist);
+          //convertToCanvasCoordinates(v1Dist);
+
+
+          ctx.lineTo(dest.x, dest.y);
+          ctx.strokeStyle = 'blue';
+          ctx.stroke();
+          ctx.moveTo(dest.x, dest.y);
+          ctx.lineTo(v1Dist.x, v1Dist.y);
+          ctx.lineTo(originalEnd.x, originalEnd.y);
+
+          ctx.stroke();
+          ctx.moveTo(dest.x, dest.y);
+          ctx.lineTo(v2Dist.x, v2Dist.y);
+          ctx.lineTo(originalEnd.x, originalEnd.y);
+          ctx.stroke();
+          ctx.closePath();
+          ctx.fillStyle = 'blue'
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(originalStart.x, originalStart.y);
+          ctx.lineTo(originalEnd.x, originalEnd.y);
+          ctx.stroke();
+          /*var vmultiW = V.multiply(new Victor(w, w));
+          var uMultiH = U.multiply(new Victor(h, h));
+          var v1 = b.clone().subtract(uMultiH).add(vmultiW);
+          var v2 = b.clone().subtract(uMultiH).subtract(vmultiW);
+          ctx.beginPath();
+          ctx.moveTo(originalB.x,originalB.y);
+          ctx.lineTo(v1.x, v1.y);
+          ctx.stroke();
+          ctx.lineTo(v2.x, v2.y);
+          ctx.stroke();
+          ctx.lineTo(originalB.x, originalB.y);
+          ctx.stroke();*/
+
+        }
         var canvas = this.$.canvas;
         var gridCanvas = this.$.gridCanvas;
         var arcCanvas = this.$.arcCanvas;
+        fitToContainer(canvas);
+        fitToContainer(gridCanvas);
+        fitToContainer(arcCanvas);
+
         var ctx = canvas.getContext("2d");
         var arcCtx = arcCanvas.getContext('2d');
         drawGrid(gridCanvas)
@@ -128,7 +217,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         canvas.addEventListener('mousemove', function(evt) {
           var mousePos = getMousePos(canvas, evt);
-          var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+          /*var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.beginPath();
           ctx.moveTo(mousePos.x, 0);
@@ -136,15 +225,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ctx.stroke();
           ctx.moveTo(0, mousePos.y)
           ctx.lineTo(mousePos.x, mousePos.y);
-          ctx.stroke();
+          ctx.stroke(); */
+          //drawArrowHead(new Victor(mousePos.x, mousePos.y), new Victor(mousePos.x, 0));
+          clearCanvas();
+          var endVector = new Victor(mousePos.x, 0);
+          var startVector = new Victor(mousePos.x, mousePos.y);
+          drawArrowHead(startVector, endVector);
+          var endVector = new Victor(0, mousePos.y);
+          var startVector = new Victor(mousePos.x, mousePos.y);
+          drawArrowHead(startVector, endVector);
         }, false);
         canvas.addEventListener('mousedown', function(evt) {
-          var canvasx = evt.pageX - canvas.offsetLeft;
-          var canvasy = evt.pageY - canvas.offsetTop;
-          arcCtx.beginPath();
-          arcCtx.arc(canvasx,canvasy,25,0,2*Math.PI);
-          arcCtx.stroke();
-        }, false)
+          var mousePos = getMousePos(canvas, evt);
+          //arcCtx.beginPath();
+          //arcCtx.arc(canvasx,canvasy,25,0,2*Math.PI);
+          //arcCtx.stroke();
+          clearCanvas();
+          var endVector = new Victor(mousePos.x, 0);
+          var startVector = new Victor(mousePos.x, mousePos.y);
+          drawArrowHead(startVector, endVector);
+          var endVector = new Victor(0, mousePos.y);
+          var startVector = new Victor(mousePos.x, mousePos.y);
+          drawArrowHead(startVector, endVector);
+
+        }, false);
 
         function getMousePos(canvas, evt) {
           var rect = canvas.getBoundingClientRect();
@@ -153,10 +257,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             y: evt.clientY - rect.top
           };
 
-          function drawArrowHead(a, b) {
-            var h = 10 * Math.sqrt()
-            var U = (a.subtract(b)).divide(b.subtract(a))
-          }
+
         }
       }
     });
