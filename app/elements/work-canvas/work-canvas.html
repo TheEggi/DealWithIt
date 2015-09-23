@@ -16,9 +16,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     width: 300px;
     height: 700px;
   }
-  
+  paper-material.main{
+    position: relative;
+    height: 100%;
+    width: 60%;
+    margin: 10px auto;
+    padding: 50px;
+    overflow: auto;
+  }
   .blue {
-    background: blue;
+    background: var(--default-primary-color);
     width: 20px;
     height: 20px;
   }
@@ -30,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
   </style>
   <template>
-    <paper-card>
+    <paper-material class="main" elevation="3">
       <div class="card-content">
         <canvas style="position: absolute; left: 0; top: 0; z-index: 0;" id="gridCanvas" width="500" height="500"></canvas>
         <canvas style="position: absolute; left: 0; top: 0; z-index: 1;" id="arcCanvas" width="500" height="500"></canvas>
@@ -40,7 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </canvas>
       </div>
-    </paper-card>
+    </paper-material>
   </template>
   <script>
   (function() {
@@ -102,6 +109,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       },
+      windowResize: function() {
+        var z = '123';
+      },
 
       attached: function() {
         function fitToContainer(canvas) {
@@ -155,7 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           ctx.beginPath();
           var umulti = U.clone().multiply(Victor(h, h));
-          ctx.moveTo(originalEnd.x, originalEnd.y);
+          //ctx.moveTo(originalEnd.x, originalEnd.y);
 
           var dest = originalEnd.clone().add(umulti); // 20 down
           convertToCanvasCoordinates(dest);
@@ -168,21 +178,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           //convertToCanvasCoordinates(v1Dist);
 
 
-          ctx.lineTo(dest.x, dest.y);
-          ctx.strokeStyle = 'blue';
-          ctx.stroke();
-          ctx.moveTo(dest.x, dest.y);
-          ctx.lineTo(v1Dist.x, v1Dist.y);
+          //ctx.moveTo(dest.x, dest.y);
+          ctx.strokeStyle = '#03A9F4';
+          ctx.lineCap = 'square';
+          ctx.lineWidth = 3;
+          //ctx.stroke();
+          ctx.moveTo(v1Dist.x, v1Dist.y);
           ctx.lineTo(originalEnd.x, originalEnd.y);
-
           ctx.stroke();
-          ctx.moveTo(dest.x, dest.y);
-          ctx.lineTo(v2Dist.x, v2Dist.y);
+          ctx.moveTo(v2Dist.x, v2Dist.y);
           ctx.lineTo(originalEnd.x, originalEnd.y);
           ctx.stroke();
           ctx.closePath();
-          ctx.fillStyle = 'blue'
-          ctx.fill();
+          ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.moveTo(originalStart.x, originalStart.y);
           ctx.lineTo(originalEnd.x, originalEnd.y);
@@ -201,7 +209,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ctx.stroke();*/
 
         }
-        var canvas = this.$.canvas;
         var gridCanvas = this.$.gridCanvas;
         var arcCanvas = this.$.arcCanvas;
         fitToContainer(canvas);
@@ -214,7 +221,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         ctx.strokeStyle = 'red';
 
-
+        
         canvas.addEventListener('mousemove', function(evt) {
           var mousePos = getMousePos(canvas, evt);
           /*var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
